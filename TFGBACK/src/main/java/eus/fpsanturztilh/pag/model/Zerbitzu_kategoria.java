@@ -57,4 +57,9 @@ public class Zerbitzu_kategoria implements Serializable {
 	@Column(name = "ezabatze_data")
 	@Schema(description = "Zerbitzu kategorien ezabatze data (autogeneratua)")
 	private LocalDateTime ezabatzeData;
+	
+	@Column(name = "irudia")
+	@Schema(description = "Zerbitzu kategoriaren irudiaren izena edo bidea", example = "koloreak.jpg")
+	private String irudia;
+
 }

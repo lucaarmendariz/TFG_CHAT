@@ -1,5 +1,6 @@
 package eus.fpsanturztilh.pag.controller;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -15,9 +16,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import eus.fpsanturztilh.pag.model.Zerbitzu_kategoria;
+import eus.fpsanturztilh.pag.service.FileUploadService;
 import eus.fpsanturztilh.pag.service.ZerbitzuKategoriaServiceImpl;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,7 +36,10 @@ public class Zerbitzu_kategoria_controller {
 
 	@Autowired
 	ZerbitzuKategoriaServiceImpl zerbitzuKategoriaService;
-
+	
+	@Autowired
+    private FileUploadService fileUploadService;
+	
 	@GetMapping("")
 	@Operation(summary = "Lortu zerbitzu kategoria guztiak", description = "Zerbitzu kategoria guztien zerrenda itzultzen du.", responses = {
 			@ApiResponse(responseCode = "200", description = "Zerbitzu kategoria guztiak eskuratu dira"),
@@ -55,12 +62,41 @@ public class Zerbitzu_kategoria_controller {
 		return ResponseEntity.notFound().build();
 	}
 
+	// Endpoint para subir imagen a la categoría
+    @PostMapping("/{id}/upload-irudia")
+    public ResponseEntity<String> uploadImage(
+            @PathVariable Long id,
+            @RequestParam("imagen") MultipartFile file) {
+
+        try {
+            // Subir la imagen y obtener el nombre del archivo
+            String fileName = fileUploadService.uploadImage(id, file);
+            
+            // Buscar la categoría por ID y actualizar la imagen
+            Optional<Zerbitzu_kategoria> kategoriaOpt = zerbitzuKategoriaService.find(id);
+            if (kategoriaOpt.isPresent()) {
+                Zerbitzu_kategoria kategoria = kategoriaOpt.get();
+                kategoria.setIrudia(fileName);  // Establecer la ruta de la imagen en la entidad
+                
+                // Guardar la categoría actualizada
+                zerbitzuKategoriaService.save(kategoria);
+                return ResponseEntity.ok("Imagen subida correctamente: " + fileName);
+            } else {
+                return ResponseEntity.status(404).body("Categoría no encontrada");
+            }
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body("Error al subir la imagen: " + e.getMessage());
+        }
+    }
+	
 	@PostMapping("")
 	@Operation(summary = "Sortu zerbitzu kategoria berri bat", description = "Zerbitzu kategoria berri bat sortzen du.", responses = {
 			@ApiResponse(responseCode = "201", description = "Zerbitzu kategoria sortu da") })
 	public ResponseEntity<Zerbitzu_kategoria> createZerbitzua(@RequestBody Zerbitzu_kategoria kategoria) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(zerbitzuKategoriaService.save(kategoria));
 	}
+	
+	
 
 	@PutMapping("")
 	@Operation(summary = "Eguneratu zerbitzu kategoria", description = "Dagoen zerbitzu kategoria bat eguneratzen du.", responses = {
