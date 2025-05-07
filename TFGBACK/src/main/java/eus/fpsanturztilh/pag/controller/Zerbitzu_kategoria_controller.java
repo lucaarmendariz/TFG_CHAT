@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -98,23 +99,35 @@ public class Zerbitzu_kategoria_controller {
 	
 	
 
-	@PutMapping("")
-	@Operation(summary = "Eguneratu zerbitzu kategoria", description = "Dagoen zerbitzu kategoria bat eguneratzen du.", responses = {
-			@ApiResponse(responseCode = "200", description = "Zerbitzu kategoria eguneratu da"),
-			@ApiResponse(responseCode = "404", description = "Zerbitzu kategoria ez da aurkitu") })
-	public ResponseEntity<Zerbitzu_kategoria> editarZerbitzua(@RequestBody Zerbitzu_kategoria kategoria) {
-		Optional<Zerbitzu_kategoria> kategoriaExistente = zerbitzuKategoriaService.find(kategoria.getId());
-		if (kategoriaExistente.isPresent()) {
-			Zerbitzu_kategoria kategoriaActualizado = kategoriaExistente.get();
-			kategoriaActualizado.setIzena(kategoria.getIzena());
-			kategoriaActualizado.setKolorea(kategoria.isKolorea());
-			kategoriaActualizado.setExtra(kategoria.isExtra());
-			zerbitzuKategoriaService.save(kategoriaActualizado);
-			return ResponseEntity.status(HttpStatus.OK).body(kategoriaActualizado);
-		} else {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-		}
+	@PutMapping("/edit-with-image")
+	public ResponseEntity<Zerbitzu_kategoria> editarZerbitzuaConImagen(
+	        @RequestPart("kategoria") Zerbitzu_kategoria kategoria,
+	        @RequestPart(value = "imagen", required = false) MultipartFile imagen) {
+
+	    Optional<Zerbitzu_kategoria> kategoriaExistente = zerbitzuKategoriaService.find(kategoria.getId());
+
+	    if (kategoriaExistente.isPresent()) {
+	        Zerbitzu_kategoria kategoriaActualizado = kategoriaExistente.get();
+	        kategoriaActualizado.setIzena(kategoria.getIzena());
+	        kategoriaActualizado.setKolorea(kategoria.isKolorea());
+	        kategoriaActualizado.setExtra(kategoria.isExtra());
+
+	        if (imagen != null && !imagen.isEmpty()) {
+	            try {
+	                String fileName = fileUploadService.uploadImage(kategoria.getId(), imagen);
+	                kategoriaActualizado.setIrudia(fileName);
+	            } catch (IOException e) {
+	                return ResponseEntity.status(500).body(null);
+	            }
+	        }
+
+	        zerbitzuKategoriaService.save(kategoriaActualizado);
+	        return ResponseEntity.ok(kategoriaActualizado);
+	    } else {
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+	    }
 	}
+
 
 	@DeleteMapping("/{id}")
 	@Operation(summary = "Ezabatu zerbitzu kategoria", description = "Zerbitzu kategoria bat ezabatzen du (logika biguna: ezabatzeData ezartzen da).", responses = {

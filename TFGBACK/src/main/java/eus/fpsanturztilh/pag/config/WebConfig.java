@@ -11,7 +11,10 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-    	registry.addResourceHandler("/api/uploads/kategoriak/**")
-                .addResourceLocations("file:C:\\Users\\Admin\\Desktop\\TFG_BACK\\TFGBACK\\uploads\\kategoriak");
+        // Ruta relativa convertida a absoluta URI
+        String uploadDir = Paths.get("uploads/kategoriak").toAbsolutePath().toUri().toString();
+
+        registry.addResourceHandler("/api/uploads/kategoriak/**")
+                .addResourceLocations(uploadDir);
     }
 }
