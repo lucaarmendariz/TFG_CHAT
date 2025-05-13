@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @RestController
@@ -50,4 +51,51 @@ public class Kolore_historiala_controller {
 	public ResponseEntity<Kolore_historiala> createKoloreHistoriala(@RequestBody Kolore_historiala kolore_historiala) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(kolore_historialaService.save(kolore_historiala));
 	}
+	
+	@PutMapping("/{id}")
+	@Operation(summary = "Kolore historiala eguneratu", description = "ID-aren arabera kolore historiala eguneratzen du eta eguneratze data ezartzen du.",
+	    responses = {
+	        @ApiResponse(responseCode = "200", description = "Kolore historiala eguneratua", content = @Content(mediaType = "application/json")),
+	        @ApiResponse(responseCode = "404", description = "Kolore historiala ez da aurkitu")
+	})
+	public ResponseEntity<Kolore_historiala> updateKoloreHistoriala(@PathVariable Long id, @RequestBody Kolore_historiala updatedKoloreHistoriala) {
+	    Optional<Kolore_historiala> existing = kolore_historialaService.find(id);
+	    if (existing.isEmpty()) {
+	        return ResponseEntity.notFound().build();
+	    }
+
+	    Kolore_historiala koloreHist = existing.get();
+
+	    // Eguneratu eremuak
+	    koloreHist.setId_produktua(updatedKoloreHistoriala.getId_produktua());
+	    koloreHist.setData(updatedKoloreHistoriala.getData());
+	    koloreHist.setKantitatea(updatedKoloreHistoriala.getKantitatea());
+	    koloreHist.setBolumena(updatedKoloreHistoriala.getBolumena());
+	    koloreHist.setOharrak(updatedKoloreHistoriala.getOharrak());
+	    koloreHist.setImg_url(updatedKoloreHistoriala.getImg_url());
+	    koloreHist.setEguneratzeData(LocalDateTime.now());
+
+	    return ResponseEntity.ok(kolore_historialaService.save(koloreHist));
+	}
+	
+	@DeleteMapping("/{id}")
+	@Operation(summary = "Kolore historiala ezabatu (logikoki)", description = "ID-aren arabera kolore historiala ezabatzen du (logikoki) ezabatze data ezarriz.",
+	    responses = {
+	        @ApiResponse(responseCode = "204", description = "Ezabatua"),
+	        @ApiResponse(responseCode = "404", description = "Ez da aurkitu")
+	})
+	public ResponseEntity<Void> deleteKoloreHistoriala(@PathVariable Long id) {
+	    Optional<Kolore_historiala> existing = kolore_historialaService.find(id);
+	    if (existing.isEmpty()) {
+	        return ResponseEntity.notFound().build();
+	    }
+
+	    Kolore_historiala koloreHist = existing.get();
+	    koloreHist.setEzabatzeData(LocalDateTime.now());
+	    kolore_historialaService.save(koloreHist);
+
+	    return ResponseEntity.noContent().build();
+	}
+
+
 }

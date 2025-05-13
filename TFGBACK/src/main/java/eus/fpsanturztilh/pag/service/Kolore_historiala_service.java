@@ -11,4 +11,5 @@ public interface Kolore_historiala_service {
     
     public Kolore_historiala save(Kolore_historiala kolore_historiala);
     
+    
 }
