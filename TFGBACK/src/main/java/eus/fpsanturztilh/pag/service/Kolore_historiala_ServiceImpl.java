@@ -32,4 +32,9 @@ public class Kolore_historiala_ServiceImpl implements Kolore_historiala_service 
     {
 		return kolore_historialaRepository.save(kolore_hist);
     }
+	
+	// Método para obtener el historial de un cliente por su ID
+    public List<Kolore_historiala> getHistorialPorClienteId(Long idCliente) {
+        return kolore_historialaRepository.findByBezeroa_Id(idCliente);
+    }
 }

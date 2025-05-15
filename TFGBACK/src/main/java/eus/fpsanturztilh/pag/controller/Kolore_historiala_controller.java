@@ -33,6 +33,19 @@ public class Kolore_historiala_controller {
 		return ResponseEntity.ok(kolore_historiala_list);
 	}
 
+	@GetMapping("/cliente/{id}")
+    @Operation(summary = "Obtener historial de un cliente por su ID", description = "Recupera todos los historiales asociados con un cliente por su ID.", responses = {
+            @ApiResponse(responseCode = "200", description = "Historial recuperado exitosamente", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "404", description = "No se encontraron historiales para el cliente")
+    })
+    public ResponseEntity<List<Kolore_historiala>> getHistorialPorCliente(@PathVariable Long id) {
+        List<Kolore_historiala> historial = kolore_historialaService.getHistorialPorClienteId(id);
+        if (historial.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(historial);
+    }
+	
 	@GetMapping("/id/{id}")
 	@Operation(summary = "Kolore historial bat lortzea IDaren arabera", description = "Kolore historial bat bilatzen du IDarekin eta aurkitzen bada itzultzen du.", responses = {
 			@ApiResponse(responseCode = "200", description = "Kolore historiala aurkitu da", content = @Content(mediaType = "application/json")),

@@ -66,6 +66,30 @@ public class Bezero_fitxa_controller {
 	public ResponseEntity<Bezero_fitxa> createBezeroFitxak(@RequestBody Bezero_fitxa bezero_fitxa) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(bezero_fitxaService.save(bezero_fitxa));
 	}
+	
+	@PutMapping("/update")
+	@Operation(summary = "Bezero fitxa bat eguneratzea", description = "Bezero fitxa eguneratzea (izena, abizena, telefonoa, eta azal sentikorra bakarrik).", responses = {
+	        @ApiResponse(responseCode = "200", description = "Bezero fitxa arrakastaz eguneratu da", content = @Content(mediaType = "application/json")),
+	        @ApiResponse(responseCode = "404", description = "Bezero fitxa ez da aurkitu") })
+	public ResponseEntity<Bezero_fitxa> updateBezero1(@RequestBody Bezero_fitxa bezeroFitxa) {
+		System.out.println(bezeroFitxa.getId());
+	    Optional<Bezero_fitxa> existingBezero = bezero_fitxaService.find(bezeroFitxa.getId());
+	    if (existingBezero.isPresent()) {
+	        Bezero_fitxa bezero = existingBezero.get();
+	        bezero.setIzena(bezeroFitxa.getIzena());
+	        bezero.setAbizena(bezeroFitxa.getAbizena());
+	        bezero.setTelefonoa(bezeroFitxa.getTelefonoa());
+	        bezero.setAzalSentikorra(bezeroFitxa.getAzalSentikorra());
+	        bezero.setEguneratzeData(LocalDateTime.now()); 
+	        
+	        // Gorde eguneratutako bezeroa
+	        bezero_fitxaService.save(bezero);
+	        return ResponseEntity.ok(bezero);
+	    } else {
+	        return ResponseEntity.notFound().build();
+	    }
+	}
+
 
 	@PutMapping("")
 	@Operation(summary = "Bezero fitxa bat eguneratzea", description = "IDarekin adierazitako bezero fitxa eguneratzen du.", responses = {
@@ -97,6 +121,7 @@ public class Bezero_fitxa_controller {
 						existing.setKantitatea(hist.getKantitatea());
 						existing.setBolumena(hist.getBolumena());
 						existing.setOharrak(hist.getOharrak());
+						existing.setImg_url(hist.getImg_url());
 
 						// Ezabatu bada, eguneratu ezabatze_data
 						if (hist.getEzabatzeData() != null) {

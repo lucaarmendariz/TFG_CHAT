@@ -7,4 +7,6 @@ import java.util.List;
 import org.springframework.data.jpa.repository.*;
 
 public interface Kolore_historiala_repository extends JpaRepository<Kolore_historiala, Long> {
+    List<Kolore_historiala> findByBezeroa_Id(Long idBezeroa);
+
 }
