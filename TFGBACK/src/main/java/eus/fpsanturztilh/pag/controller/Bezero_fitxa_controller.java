@@ -118,6 +118,7 @@ public class Bezero_fitxa_controller {
 					if (existingHist.isPresent()) {
 						Kolore_historiala existing = existingHist.get();
 						existing.setData(hist.getData());
+						existing.setId_produktua(hist.getId_produktua());
 						existing.setKantitatea(hist.getKantitatea());
 						existing.setBolumena(hist.getBolumena());
 						existing.setOharrak(hist.getOharrak());
