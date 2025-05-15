@@ -155,6 +155,7 @@ public class Zerbitzu_kategoria_controller {
 	        kategoriaActualizado.setIzena(kategoria.getIzena());
 	        kategoriaActualizado.setKolorea(kategoria.isKolorea());
 	        kategoriaActualizado.setExtra(kategoria.isExtra());
+	        kategoriaActualizado.setEguneratzeData(LocalDateTime.now());
 
 	        if (imagen != null && !imagen.isEmpty()) {
 	            try {
@@ -174,11 +175,6 @@ public class Zerbitzu_kategoria_controller {
 	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 	    }
 	}
-
-
-	
-	
-
 
 	@DeleteMapping("/{id}")
 	@Operation(summary = "Ezabatu zerbitzu kategoria", description = "Zerbitzu kategoria bat ezabatzen du (logika biguna: ezabatzeData ezartzen da).", responses = {
