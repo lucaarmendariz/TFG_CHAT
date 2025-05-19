@@ -79,6 +79,8 @@ public class Bezero_fitxa_controller {
 	        bezero.setIzena(bezeroFitxa.getIzena());
 	        bezero.setAbizena(bezeroFitxa.getAbizena());
 	        bezero.setTelefonoa(bezeroFitxa.getTelefonoa());
+	        System.out.println(bezeroFitxa.getAzalSentikorra());
+	        System.out.println(bezero.getAzalSentikorra());
 	        bezero.setAzalSentikorra(bezeroFitxa.getAzalSentikorra());
 	        bezero.setEguneratzeData(LocalDateTime.now()); 
 	        

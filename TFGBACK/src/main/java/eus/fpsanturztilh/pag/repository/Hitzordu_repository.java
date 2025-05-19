@@ -28,7 +28,6 @@ public interface Hitzordu_repository extends JpaRepository<Hitzorduak, Long> {
 	        "AND h.ezabatze_data IS NULL " +
 	        "AND z.ezabatze_data IS NULL " +
 	        "AND zc.ezabatze_data IS NULL " +
-	        "AND zc.extra = 0 " +
 	        "GROUP BY l.id, zc.id " +
 	        "ORDER BY l.izena, zc.izena", nativeQuery = true)
 	public List<Tuple> contarServiciosPorCategoria();
